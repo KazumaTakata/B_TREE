@@ -10,11 +10,16 @@ const (
 	UPLEFT
 )
 
+type IndexAddDel struct {
+	X []int
+	Y []int
+}
+
 func main() {
 
-	X := []string{"h", "e", "l", "ee", "e", "a", "r"}
+	X := []string{"h", "e", "l", "ee", "e", "a", "r", "sdsfwe"}
 
-	Y := []string{"h", "f", "ee", "s", "e", "a"}
+	Y := []string{"h", "f", "ee", "s", "e", "a", "r", "fwefewa"}
 
 	xLength := len(X)
 	yLength := len(Y)
@@ -52,8 +57,19 @@ func main() {
 		}
 	}
 
-	printLCS(b, X, xLength, yLength)
+	ans, index := getLCS(b, X, xLength, yLength)
 
+	for _, str := range ans {
+		fmt.Printf(str)
+	}
+
+	for _, i := range index.X {
+		fmt.Printf("%d", i)
+	}
+
+	for _, i := range index.Y {
+		fmt.Printf("%d", i)
+	}
 }
 
 func printLCS(b [][]Arrow, X []string, i int, j int) {
@@ -68,5 +84,26 @@ func printLCS(b [][]Arrow, X []string, i int, j int) {
 		printLCS(b, X, i-1, j)
 	} else {
 		printLCS(b, X, i, j-1)
+	}
+}
+
+func getLCS(b [][]Arrow, X []string, i int, j int) ([]string, IndexAddDel) {
+	if i == 0 || j == 0 {
+		return []string{}, IndexAddDel{}
+	}
+
+	ans := []string{}
+	index := IndexAddDel{}
+
+	if b[i][j] == UPLEFT {
+		ans, index = getLCS(b, X, i-1, j-1)
+		ans = append(ans, X[i-1])
+		index.X = append(index.X, i-1)
+		index.Y = append(index.Y, j-1)
+		return ans, index
+	} else if b[i][j] == UP {
+		return getLCS(b, X, i-1, j)
+	} else {
+		return getLCS(b, X, i, j-1)
 	}
 }
