@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"sort"
+	"strings"
+)
 
 type Arrow int
 
@@ -15,11 +21,29 @@ type IndexAddDel struct {
 	Y []int
 }
 
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
 func main() {
 
-	X := []string{"h", "e", "l", "ee", "e", "a", "r", "sdsfwe"}
+	// X := []string{"h", "e", "l", "ee", "e", "a", "r", "sdsfwe"}
 
-	Y := []string{"h", "f", "ee", "s", "e", "a", "r", "fwefewa"}
+	// Y := []string{"h", "f", "ee", "s", "e", "a", "r", "fwefewa"}
+
+	args := os.Args[1:]
+
+	XByte, err := ioutil.ReadFile(args[0])
+	check(err)
+
+	X := strings.Split(string(XByte), "\n")
+
+	YByte, err := ioutil.ReadFile(args[1])
+	check(err)
+
+	Y := strings.Split(string(YByte), "\n")
 
 	xLength := len(X)
 	yLength := len(Y)
@@ -57,18 +81,34 @@ func main() {
 		}
 	}
 
-	ans, index := getLCS(b, X, xLength, yLength)
+	_, index := getLCS(b, X, xLength, yLength)
+	// fmt.Println("-----------")
+	// fmt.Println("common line")
+	// fmt.Println("-----------")
+	// for _, str := range ans {
+	// 	fmt.Println(str)
+	// }
 
-	for _, str := range ans {
-		fmt.Printf(str)
+	fmt.Println("-----------")
+	fmt.Println("deleted line")
+	fmt.Println("-----------")
+
+	for i := 0; i < xLength; i++ {
+		searchIn := sort.SearchInts(index.X, i)
+		if searchIn >= len(index.X) || index.X[searchIn] != i {
+			fmt.Println(X[i])
+		}
 	}
 
-	for _, i := range index.X {
-		fmt.Printf("%d", i)
-	}
+	fmt.Println("-----------")
+	fmt.Println("inserted line")
+	fmt.Println("-----------")
 
-	for _, i := range index.Y {
-		fmt.Printf("%d", i)
+	for i := 0; i < yLength; i++ {
+		searchIn := sort.SearchInts(index.Y, i)
+		if searchIn >= len(index.Y) || index.Y[searchIn] != i {
+			fmt.Println(Y[i])
+		}
 	}
 }
 
